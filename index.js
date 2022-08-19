@@ -1,8 +1,11 @@
 'use strict';
 
-const crypto = require('crypto');
-const https = require('https');
-const url = require('url');
+// For Cloudflare Workers
+// const crypto = require('crypto');
+// const https = require('https');
+// const url = require('url');
+const hmacSHA256 = require('crypto-js/build/hmac-sha256');
+const hex = require('crypto-js/build/enc-hex');
 
 /**
  * Encode a string by replacing each instance of the `&` and `%` characters
@@ -141,16 +144,22 @@ class ShopifyToken {
 
     if (
       typeof query.hmac !== 'string' ||
-      Buffer.byteLength(query.hmac) !== 64
+      query.hmac.length !== 64
+      // For Cloudflare Workers
+      // Buffer.byteLength(query.hmac) !== 64
     ) {
       return false;
     }
 
-    const digest = crypto.createHmac('sha256', this.sharedSecret)
-      .update(pairs.join('&'))
-      .digest();
+    // For Cloudflare Workers
+    // const digest = crypto.createHmac('sha256', this.sharedSecret)
+    //   .update(pairs.join('&'))
+    //   .digest();
+    const digest = hex.stringify(hmacSHA256(pairs.join('&'), this.sharedSecret))
 
-    return timingSafeEqual(digest, Buffer.from(query.hmac, 'hex'));
+    // For Cloudflare Workers
+    // return timingSafeEqual(digest, Buffer.from(query.hmac, 'hex'));
+    return timingSafeEqual(digest, query.hmac);
   }
 
   /**

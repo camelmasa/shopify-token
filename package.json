@@ -31,5 +31,8 @@
     "mocha": "^10.0.0",
     "nock": "^13.0.4",
     "pre-commit": "^1.2.2"
+  },
+  "dependencies": {
+    "crypto-js": "camelmasa/crypto-js#for-cloudflare-workers"
   }
 }
